@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>te amo</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: #000000;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Georgia, serif;
+}
+svg {
+    width: min(95vw, 700px);
+    height: 85vh;
+    overflow: visible;
+}
+.stem {
+    fill: none;
+    stroke: #6eb78e;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-dasharray: 400;
+    stroke-dashoffset: 400;
+    animation: grow 3s ease forwards;
+}
+.leaf {
+    fill: #478c70;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: bloom 1.5s ease forwards;
+}
+.petal {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(0);
+    animation: bloom 2s cubic-bezier(.2,1.5,.4,1) forwards;
+}
+.center {
+    fill: #f8d6ff;
+    opacity: 0;
+    animation: appear 2s ease forwards;
+}
+@keyframes grow {
+    to { stroke-dashoffset: 0; }
+}
+@keyframes bloom {
+    to { opacity: 1; transform: scale(1); }
+}
+@keyframes appear {
+    to { opacity: 1; }
+}
+.star {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #dabaff;
+    box-shadow: 0 0 12px #bb79ff;
+    animation: twinkle 3s infinite alternate;
+}
+@keyframes twinkle {
+    from { opacity: .15; transform: scale(.5); }
+    to { opacity: 1; transform: scale(1.5); }
+}
+.message {
+    position: absolute;
+    bottom: 6%;
+    color: #ffffff;
+    letter-spacing: 3px;
+    font-size: clamp(17px, 4vw, 27px);
+    text-shadow: none;
+    opacity: 0;
+    animation: appear 3s ease 6s forwards;
+}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 600 700" id="garden"></svg>
+<div class="message"> #GTA </div>
+
+<script>
+const svg = document.getElementById("garden");
+const NS = "http://www.w3.org/2000/svg";
+
+function element(tag, attrs, parent = svg) {
+    const node = document.createElementNS(NS, tag);
+    for (const [key, value] of Object.entries(attrs)) {
+        node.setAttribute(key, value);
+    }
+    parent.appendChild(node);
+    return node;
+}
+
+function flower(x, y, size, delay, color) {
+    const baseX = 300;
+    const baseY = 670;
+
+    // Tallo que se dibuja desde abajo
+    const stem = element("path", {
+        d: `M ${baseX} ${baseY} Q ${x - 35} ${y + 150} ${x} ${y}`,
+        class: "stem",
+        style: `animation-delay:${delay}s`
+    });
+
+    const length = stem.getTotalLength();
+    stem.style.strokeDasharray = length;
+    stem.style.strokeDashoffset = length;
+
+    // Hojas
+    const leaf = element("ellipse", {
+        cx: (baseX + x) / 2 - 22,
+        cy: (baseY + y) / 2 + 35,
+        rx: 13,
+        ry: 32,
+        transform: `rotate(-48 ${(baseX+x)/2-22} ${(baseY+y)/2+35})`,
+        class: "leaf",
+        style: `animation-delay:${delay + 1.6}s`
+    });
+
+    // Pétalos que se abren uno a uno
+    for (let i = 0; i < 8; i++) {
+        const angle = i * 45;
+        element("ellipse", {
+            cx: x,
+            cy: y - size * 0.6,
+            rx: size * 0.33,
+            ry: size * 0.68,
+            fill: color,
+            stroke: "#e8baff",
+            "stroke-width": 0.8,
+            transform: `rotate(${angle} ${x} ${y})`,
+            class: "petal",
+            style: `animation-delay:${delay + 2.1 + i * .13}s`
+        });
+    }
+
+    element("circle", {
+        cx: x, cy: y, r: size * .23,
+        class: "center",
+        style: `animation-delay:${delay + 3.3}s`
+    });
+}
+
+// Ramo de flores moradas
+flower(155, 350, 39, 0.0, "#a46bdf");
+flower(270, 225, 52, 0.5, "#b584f1");
+flower(405, 320, 44, 1.0, "#8647c8");
+flower(195, 460, 31, 1.4, "#d2a2ff");
+flower(365, 465, 35, 1.8, "#a16bea");
+flower(310, 365, 38, 0.8, "#c38efa");
+
+</script>
+</body>
+</html>
